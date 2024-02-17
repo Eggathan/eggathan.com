@@ -1,16 +1,21 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.getElementById('updateGallery').addEventListener('click', function() {
     const gallery = document.getElementById('imageGallery');
+    gallery.innerHTML = ''; // Clear the gallery
 
-    // List your images here
-    const images = ['image1.jpg', 'image2.png', 'image3.jpg']; // etc.
+    // GitHub API URL for contents of the image folder
+    const apiUrl = 'https://api.github.com/repos/yourUsername/yourRepository/contents/path/to/images/folder';
 
-    // Alternatively, if you have a large number of images or they change often,
-    // consider generating this list dynamically on the server-side, or using a static site generator.
-
-    images.forEach(image => {
-        const imgElement = document.createElement('img');
-        imgElement.src = `./imgs/${image}`;
-        imgElement.alt = ''; // Consider adding meaningful alt text for each image
-        gallery.appendChild(imgElement);
-    });
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(file => {
+                if(file.type === "file") {
+                    const img = document.createElement('img');
+                    img.src = file.download_url; // Use the download_url to get the raw image
+                    img.alt = 'Gallery image';
+                    gallery.appendChild(img);
+                }
+            });
+        })
+        .catch(error => console.error('Error loading the images:', error));
 });
